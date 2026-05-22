@@ -1,0 +1,99 @@
+<html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIRDAN OSINT RECON</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Courier+Prime&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #000;
+            color: #00ff41;
+            font-family: 'Courier Prime', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .panel {
+            border: 2px solid #00ff41;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            background: rgba(10, 10, 10, 0.9);
+        }
+        h1 { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; margin-bottom: 20px; text-shadow: 0 0 10px #00ff41; }
+        .upload-btn {
+            border: 1px dashed #00ff41;
+            padding: 20px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+        .upload-btn:hover { background: rgba(0, 255, 65, 0.1); }
+        #scanner {
+            display: none;
+            height: 150px;
+            border: 1px solid #333;
+            margin-top: 15px;
+            position: relative;
+            background: url('https://i.pinimg.com/originals/70/4e/9e/704e9e0543e742468f763e0202796e6d.gif') center/cover;
+        }
+        .scan-line {
+            width: 100%;
+            height: 4px;
+            background: #00ff41;
+            position: absolute;
+            top: 0;
+            box-shadow: 0 0 15px #00ff41;
+            animation: move 2s linear infinite;
+        }
+        @keyframes move { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+        #logs {
+            background: #050505;
+            padding: 10px;
+            font-size: 0.7rem;
+            height: 80px;
+            overflow-y: auto;
+            text-align: left;
+            margin-top: 15px;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="panel">
+    <h1>PIRDAN FACE-RECON</h1>
+    <div class="upload-btn" onclick="document.getElementById('imgInp').click()">
+        [ UPLOAD TARGET IMAGE ]
+        <input type="file" id="imgInp" style="display:none" onchange="runRecon()">
+    </div>
+
+    <div id="scanner"><div class="scan-line"></div></div>
+
+    <div id="logs">> System Ready...<br>> Waiting for input...</div>
+</div>
+
+<script>
+    function runRecon() {
+        const logs = document.getElementById('logs');
+        document.getElementById('scanner').style.display = 'block';
+        
+        logs.innerHTML += "<br>> Image Detected...";
+        setTimeout(() => { logs.innerHTML += "<br>> Extracting Biometric Data..."; }, 1000);
+        setTimeout(() => { logs.innerHTML += "<br>> Searching Global Social Media..."; }, 2500);
+        setTimeout(() => { 
+            logs.innerHTML += "<br>> <span style='color:white'>MATCH FOUND! REDIRECTING...</span>";
+            window.location.href = "https://facecheck.id/"; // Ngarah ke mesin aslinya
+        }, 4500);
+    }
+</script>
+
+</body>
+  </html>
+  
