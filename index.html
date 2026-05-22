@@ -2,94 +2,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIRDAN OSINT RECON</title>
+    <title>PIRDAN OSINT MATRIX - RECON CONSOLE</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Courier+Prime&display=swap" rel="stylesheet">
     <style>
+        * { box-sizing: border-box; }
         body {
-            background: #000;
+            background: #050505;
             color: #00ff41;
             font-family: 'Courier Prime', monospace;
+            margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
+            min-height: 100vh;
         }
-        .panel {
+        .console-container {
             border: 2px solid #00ff41;
-            padding: 30px;
-            width: 90%;
-            max-width: 400px;
+            background: rgba(10, 10, 10, 0.95);
+            width: 100%;
+            max-width: 500px;
+            padding: 25px;
+            box-shadow: 0 0 25px rgba(0, 255, 65, 0.3);
             text-align: center;
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
-            background: rgba(10, 10, 10, 0.9);
         }
-        h1 { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; margin-bottom: 20px; text-shadow: 0 0 10px #00ff41; }
-        .upload-btn {
-            border: 1px dashed #00ff41;
-            padding: 20px;
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00ff41;
+            letter-spacing: 2px;
+        }
+        .upload-zone {
+            border: 2px dashed #00ff41;
+            padding: 30px 10px;
             cursor: pointer;
             margin-bottom: 20px;
+            background: rgba(0, 255, 65, 0.02);
             transition: 0.3s;
         }
-        .upload-btn:hover { background: rgba(0, 255, 65, 0.1); }
-        #scanner {
+        .upload-zone:hover {
+            background: rgba(0, 255, 65, 0.08);
+            box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.2);
+        }
+        #scanArea {
             display: none;
-            height: 150px;
-            border: 1px solid #333;
+            height: 120px;
+            border: 1px solid #111;
             margin-top: 15px;
             position: relative;
-            background: url('https://i.pinimg.com/originals/70/4e/9e/704e9e0543e742468f763e0202796e6d.gif') center/cover;
+            background: #000;
+            overflow: hidden;
         }
         .scan-line {
             width: 100%;
-            height: 4px;
+            height: 3px;
             background: #00ff41;
             position: absolute;
             top: 0;
-            box-shadow: 0 0 15px #00ff41;
-            animation: move 2s linear infinite;
+            box-shadow: 0 0 12px #00ff41;
+            animation: radar 2s linear infinite;
         }
-        @keyframes move { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
-        #logs {
-            background: #050505;
-            padding: 10px;
-            font-size: 0.7rem;
-            height: 80px;
+        @keyframes radar {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+        .terminal-logs {
+            background: #000;
+            border: 1px solid #222;
+            padding: 12px;
+            font-size: 0.75rem;
+            height: 110px;
             overflow-y: auto;
             text-align: left;
-            margin-top: 15px;
-            border: 1px solid #333;
+            margin-bottom: 20px;
+            color: #00ff41;
+        }
+        .engine-status {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.7rem;
+            text-align: left;
+            margin-bottom: 20px;
+            border-top: 1px solid #222;
+            padding-top: 15px;
+        }
+        .status-item { display: flex; align-items: center; justify-content: space-between; }
+        .dot { width: 8px; height: 8px; border-radius: 5px; display: inline-block; }
+        .dot.online { background: #00ff41; box-shadow: 0 0 5px #00ff41; }
+        .dot.busy { background: #ffaa00; box-shadow: 0 0 5px #ffaa00; }
+        
+        .engine-buttons {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .btn-engine {
+            background: #000;
+            color: #00ff41;
+            border: 1px solid #00ff41;
+            padding: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-engine:hover {
+            background: #00ff41;
+            color: #000;
+            box-shadow: 0 0 15px #00ff41;
         }
     </style>
 </head>
 <body>
 
-<div class="panel">
-    <h1>PIRDAN FACE-RECON</h1>
-    <div class="upload-btn" onclick="document.getElementById('imgInp').click()">
-        [ UPLOAD TARGET IMAGE ]
-        <input type="file" id="imgInp" style="display:none" onchange="runRecon()">
+<div class="console-container">
+    <h1>PIRDAN OSINT MATRIX</h1>
+    
+    <div class="upload-zone" onclick="document.getElementById('fileChooser').click()">
+        [ + UPLOAD BIOMETRIC IMAGE ]
+        <input type="file" id="fileChooser" style="display:none" onchange="executeMatrixScan()">
     </div>
 
-    <div id="scanner"><div class="scan-line"></div></div>
+    <div id="scanArea">
+        <div class="scan-line"></div>
+        <p style="font-size: 0.7rem; margin-top: 50px; color: rgba(0,255,65,0.5);">GRID OVERLAY ACTIVE</p>
+    </div>
 
-    <div id="logs">> System Ready...<br>> Waiting for input...</div>
+    <div id="terminal" class="terminal-logs">
+        > SYSTEM: STANDBY<br>
+        > WAITING FOR DATA INPUT...
+    </div>
+
+    <div class="engine-status">
+        <div class="status-item">PimEyes: <span style="color:#00ff41"><span class="dot online"></span> ONLINE</span></div>
+        <div class="status-item">FaceCheck: <span style="color:#ffaa00"><span class="dot busy"></span> BUSY (503)</span></div>
+        <div class="status-item">Google Lens: <span style="color:#00ff41"><span class="dot online"></span> ONLINE</span></div>
+        <div class="status-item">SocialCatfish: <span style="color:#00ff41"><span class="dot online"></span> ONLINE</span></div>
+    </div>
+
+    <div id="engineMenu" class="engine-buttons">
+        <p style="font-size: 0.75rem; margin: 0; color: #fff;">[ PILIH MESIN CADANGAN DI BAWAH ]</p>
+        <a href="https://pimeyes.com/" target="_blank" class="btn-engine">LAUNCH PIMEYES (RECOMENDED)</a>
+        <a href="https://images.google.com/" target="_blank" class="btn-engine">LAUNCH GOOGLE LENS</a>
+        <a href="https://facecheck.id/" target="_blank" class="btn-engine" style="border-color: #ffaa00; color: #ffaa00;">RETRY FACECHECK (SERVER ERROR 503)</a>
+    </div>
 </div>
 
 <script>
-    function runRecon() {
-        const logs = document.getElementById('logs');
-        document.getElementById('scanner').style.display = 'block';
+    function executeMatrixScan() {
+        const terminal = document.getElementById('terminal');
+        const scanArea = document.getElementById('scanArea');
+        const engineMenu = document.getElementById('engineMenu');
         
-        logs.innerHTML += "<br>> Image Detected...";
-        setTimeout(() => { logs.innerHTML += "<br>> Extracting Biometric Data..."; }, 1000);
-        setTimeout(() => { logs.innerHTML += "<br>> Searching Global Social Media..."; }, 2500);
+        scanArea.style.display = 'block';
+        engineMenu.style.style = 'none';
+        
+        terminal.innerHTML += "<br>> [INFO] Image Package Received.";
+        
         setTimeout(() => { 
-            logs.innerHTML += "<br>> <span style='color:white'>MATCH FOUND! REDIRECTING...</span>";
-            window.location.href = "https://facecheck.id/"; // Ngarah ke mesin aslinya
-        }, 4500);
+            terminal.innerHTML += "<br>> [PROCESS] Extracting Facial Nodes..."; 
+            terminal.scrollTop = terminal.scrollHeight;
+        }, 800);
+        
+        setTimeout(() => { 
+            terminal.innerHTML += "<br>> [PROCESS] Querying Multi-Engine Network..."; 
+            terminal.scrollTop = terminal.scrollHeight;
+        }, 2000);
+        
+        setTimeout(() => { 
+            terminal.innerHTML += "<br>> [WARNING] FaceCheck Server Rejected Request (503).";
+            terminal.innerHTML += "<br>> [SUCCESS] Multi-Engine Alternative Loaded!";
+            terminal.scrollTop = terminal.scrollHeight;
+            
+            // Munculin tombol pilihan mesin cadangan
+            scanArea.style.display = 'none';
+            engineMenu.style.display = 'flex';
+        }, 4000);
     }
 </script>
 
